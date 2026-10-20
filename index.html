@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101b24">
+  <title>Brass Basics — Trumpet Fingering</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f5f2e9;
+      --muted: #a7b5bc;
+      --panel: #192832;
+      --panel-light: #223540;
+      --gold: #f2bd58;
+      --gold-dark: #b88128;
+      --mint: #89d6b6;
+      --red: #ff9c8f;
+      font-family: Inter, ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      padding: max(22px, env(safe-area-inset-top)) 18px max(26px, env(safe-area-inset-bottom));
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 50% -12%, #36505a 0, transparent 53%),
+        #101b24;
+    }
+
+    main { width: min(100%, 480px); margin: 0 auto; }
+
+    header { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
+    .brand-mark {
+      display: grid; place-items: center; width: 42px; height: 42px;
+      border: 1px solid #765b31; border-radius: 14px; color: var(--gold);
+      background: #30281d; font-size: 21px;
+    }
+    .brand { font-size: 14px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+    .brand-sub { margin-top: 3px; color: var(--muted); font-size: 12px; }
+
+    .score-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .eyebrow { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    .score { color: var(--gold); font-size: 13px; font-weight: 750; }
+    .card {
+      overflow: hidden; padding: 22px 20px 20px; border: 1px solid #314550;
+      border-radius: 24px; background: linear-gradient(145deg, #1d303a, var(--panel) 75%);
+      box-shadow: 0 18px 50px #0003;
+    }
+
+    .prompt { text-align: center; }
+    .prompt-label { color: var(--muted); font-size: 13px; }
+    .note {
+      margin: 7px 0 4px; color: var(--ink); font-size: clamp(76px, 24vw, 104px);
+      font-weight: 850; letter-spacing: -.075em; line-height: 1.04;
+    }
+    .note sup { position: relative; top: -.24em; margin-left: 5px; font-size: .35em; letter-spacing: 0; }
+    .pitch-label { color: var(--muted); font-size: 12px; }
+
+    .staff { position: relative; width: 190px; height: 84px; margin: 18px auto 4px; }
+    .staff-lines {
+      position: absolute; top: 20px; right: 0; left: 0; height: 41px;
+      background: repeating-linear-gradient(to bottom, #85949a 0 1px, transparent 1px 10px);
+      opacity: .8;
+    }
+    .staff-note {
+      position: absolute; left: 50%; z-index: 1; width: 17px; height: 11px;
+      border: 2px solid var(--gold); border-radius: 50%; background: var(--panel);
+      transform: translate(-50%, -50%) rotate(-18deg);
+    }
+    .ledger-line {
+      position: absolute; left: 50%; width: 27px; height: 1px; background: #85949a;
+      transform: translate(-50%, -50%);
+    }
+    .staff-clef { position: absolute; left: 1px; top: -8px; color: var(--gold); font: 42px Georgia, serif; }
+
+    .question-title { margin: 19px 0 13px; text-align: center; font-size: 15px; font-weight: 750; }
+    .valves { display: flex; justify-content: center; gap: 12px; }
+    .valve {
+      display: flex; min-width: 82px; min-height: 94px; flex-direction: column; align-items: center;
+      justify-content: center; gap: 8px; border: 1px solid #425660; border-radius: 17px;
+      color: var(--ink); background: #14232c; cursor: pointer; touch-action: manipulation;
+      transition: transform .12s, border-color .12s, background .12s, box-shadow .12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .valve:active { transform: scale(.96); }
+    .valve[aria-pressed="true"] {
+      border-color: var(--gold); background: #3a3021; box-shadow: inset 0 0 0 1px #f2bd5833, 0 5px 18px #0002;
+    }
+    .valve:focus-visible, button:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
+    .valve-number {
+      display: grid; place-items: center; width: 39px; height: 39px; border: 2px solid #718087;
+      border-radius: 50%; color: var(--muted); font-size: 17px; font-weight: 850;
+    }
+    .valve[aria-pressed="true"] .valve-number { border-color: var(--gold); color: var(--gold); }
+    .valve-caption { color: var(--muted); font-size: 11px; font-weight: 700; }
+
+    .feedback { min-height: 23px; margin: 13px 0 3px; color: var(--muted); text-align: center; font-size: 13px; font-weight: 700; }
+    .feedback.correct { color: var(--mint); }
+    .feedback.incorrect { color: var(--red); }
+    .actions { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 10px; }
+    button.action {
+      min-height: 52px; border: 0; border-radius: 15px; cursor: pointer; font: inherit;
+      font-size: 14px; font-weight: 800; touch-action: manipulation;
+    }
+    button.action:disabled { cursor: default; opacity: .7; }
+    .check { color: #21190d; background: var(--gold); box-shadow: 0 5px 0 var(--gold-dark); }
+    .check:active { transform: translateY(2px); box-shadow: 0 3px 0 var(--gold-dark); }
+    .next { min-width: 54px; padding: 0 16px; border: 1px solid #425660 !important; color: var(--ink); background: var(--panel-light); }
+    .next span { font-size: 20px; }
+
+    .helper { margin: 20px 2px 0; color: var(--muted); text-align: center; font-size: 12px; line-height: 1.55; }
+    .helper strong { color: #d8e0df; }
+    @media (max-width: 360px) {
+      body { padding-right: 12px; padding-left: 12px; }
+      .card { padding-right: 15px; padding-left: 15px; }
+      .valves { gap: 8px; }
+      .valve { min-width: 75px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="brand-mark" aria-hidden="true">♬</div>
+      <div>
+        <div class="brand">Brass Basics</div>
+        <div class="brand-sub">Trumpet fingering practice</div>
+      </div>
+    </header>
+
+    <div class="score-row">
+      <div class="eyebrow">Your turn</div>
+      <div class="score" aria-live="polite">0 correct</div>
+    </div>
+
+    <section class="card" aria-labelledby="question">
+      <div class="prompt">
+        <div class="prompt-label">Which valves do you press for</div>
+        <h1 class="note" id="question" aria-label="Note to finger">C<sup>4</sup></h1>
+        <div class="pitch-label">Written pitch · standard Bb trumpet</div>
+        <div class="staff" aria-hidden="true">
+          <span class="staff-lines"></span>
+          <span class="staff-clef">𝄞</span>
+          <span class="ledger-line" hidden></span>
+          <span class="staff-note"></span>
+        </div>
+      </div>
+
+      <h2 class="question-title">Choose your valves</h2>
+      <div class="valves" aria-label="Trumpet valves">
+        <button class="valve" type="button" aria-pressed="false" aria-label="Valve 1, first valve">
+          <span class="valve-number">1</span><span class="valve-caption">FIRST</span>
+        </button>
+        <button class="valve" type="button" aria-pressed="false" aria-label="Valve 2, second valve">
+          <span class="valve-number">2</span><span class="valve-caption">SECOND</span>
+        </button>
+        <button class="valve" type="button" aria-pressed="false" aria-label="Valve 3, third valve">
+          <span class="valve-number">3</span><span class="valve-caption">THIRD</span>
+        </button>
+      </div>
+
+      <div class="feedback" role="status" aria-live="polite">Tap the valves, then check your answer.</div>
+      <div class="actions">
+        <button class="action check" type="button">Check answer</button>
+        <button class="action next" type="button" aria-label="Skip to next note"><span aria-hidden="true">↻</span></button>
+      </div>
+    </section>
+
+    <p class="helper"><strong>How to play:</strong> Tap each valve you would press, then check your answer. The note names are in written pitch.</p>
+  </main>
+
+  <script>
+    (() => {
+      // Written pitches in the standard beginner range; valve numbers are sorted for comparison.
+      const notes = [
+        { name: "C", octave: 4, valves: [] },
+        { name: "D", octave: 4, valves: [1, 3] },
+        { name: "E", octave: 4, valves: [1, 2] },
+        { name: "F", octave: 4, valves: [1] },
+        { name: "G", octave: 4, valves: [] },
+        { name: "A", octave: 4, valves: [1, 2] },
+        { name: "B", octave: 4, valves: [2] },
+        { name: "C", octave: 5, valves: [] },
+        { name: "D", octave: 5, valves: [1] },
+        { name: "E", octave: 5, valves: [] },
+        { name: "F", octave: 5, valves: [1] },
+        { name: "G", octave: 5, valves: [] }
+      ];
+      const valveButtons = [...document.querySelectorAll(".valve")];
+      const noteHeading = document.querySelector(".note");
+      const staffNote = document.querySelector(".staff-note");
+      const ledgerLine = document.querySelector(".ledger-line");
+      const feedback = document.querySelector(".feedback");
+      const scoreDisplay = document.querySelector(".score");
+      const checkButton = document.querySelector(".check");
+      const nextButton = document.querySelector(".next");
+      let currentNote;
+      let correctCount = 0;
+      let previousIndex = -1;
+      let nextTimer;
+
+      function nextNote() {
+        window.clearTimeout(nextTimer);
+        let index;
+        do {
+          index = Math.floor(Math.random() * notes.length);
+        } while (index === previousIndex);
+        previousIndex = index;
+        currentNote = notes[index];
+        noteHeading.innerHTML = `${currentNote.name}<sup>${currentNote.octave}</sup>`;
+        noteHeading.setAttribute("aria-label", `Note to finger: ${currentNote.name} ${currentNote.octave}`);
+        const diatonicSteps = ({ C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 }[currentNote.name]) +
+          (currentNote.octave - 4) * 7 - 2;
+        const noteTop = 60 - diatonicSteps * 5;
+        staffNote.style.top = `${noteTop}px`;
+        ledgerLine.style.top = `${noteTop}px`;
+        ledgerLine.hidden = !(currentNote.name === "C" && currentNote.octave === 4);
+        valveButtons.forEach(button => button.setAttribute("aria-pressed", "false"));
+        feedback.textContent = "Tap the valves, then check your answer.";
+        feedback.className = "feedback";
+        checkButton.disabled = false;
+      }
+
+      function selectedValves() {
+        return valveButtons
+          .filter(button => button.getAttribute("aria-pressed") === "true")
+          .map(button => Number(button.querySelector(".valve-number").textContent))
+          .sort((a, b) => a - b);
+      }
+
+      valveButtons.forEach(button => {
+        button.addEventListener("click", () => {
+          const pressed = button.getAttribute("aria-pressed") === "true";
+          button.setAttribute("aria-pressed", String(!pressed));
+          feedback.textContent = "Ready when you are — check your answer.";
+          feedback.className = "feedback";
+        });
+      });
+
+      checkButton.addEventListener("click", () => {
+        if (checkButton.disabled) return;
+        const selected = selectedValves();
+        const correct = selected.length === currentNote.valves.length &&
+          selected.every((valve, index) => valve === currentNote.valves[index]);
+        if (correct) {
+          correctCount += 1;
+          scoreDisplay.textContent = `${correctCount} correct`;
+          feedback.textContent = "That's right! Nice work.";
+          feedback.className = "feedback correct";
+          checkButton.disabled = true;
+          nextTimer = window.setTimeout(nextNote, 850);
+        } else {
+          const answer = currentNote.valves.length ? currentNote.valves.join(" + ") : "open (no valves)";
+          feedback.textContent = `Not quite. Try again — the answer is ${answer}.`;
+          feedback.className = "feedback incorrect";
+        }
+      });
+
+      nextButton.addEventListener("click", nextNote);
+      nextNote();
+    })();
+  </script>
+</body>
+</html>
