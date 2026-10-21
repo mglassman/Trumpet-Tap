@@ -61,8 +61,6 @@
       margin: 7px 0 4px; color: var(--ink); font-size: clamp(76px, 24vw, 104px);
       font-weight: 850; letter-spacing: -.075em; line-height: 1.04;
     }
-    .note sup { position: relative; top: -.24em; margin-left: 5px; font-size: .35em; letter-spacing: 0; }
-    .pitch-label { color: var(--muted); font-size: 12px; }
 
     .staff { position: relative; width: 190px; height: 84px; margin: 18px auto 4px; }
     .staff-lines {
@@ -236,8 +234,7 @@
       </div>
       <div class="prompt">
         <div class="prompt-label">Which valves do you press for</div>
-        <h1 class="note" id="question" aria-label="Note to finger">C<sup>4</sup></h1>
-        <div class="pitch-label">Written pitch · standard Bb trumpet</div>
+        <h1 class="note" id="question" aria-label="Note to finger: C">C</h1>
         <div class="staff" aria-hidden="true">
           <span class="staff-lines"></span>
           <span class="staff-clef">𝄞</span>
@@ -523,8 +520,8 @@
         } while (availableNotes.length > 1 && index === previousIndex);
         previousIndex = index;
         currentNote = availableNotes[index];
-        noteHeading.innerHTML = `${currentNote.name}<sup>${currentNote.octave}</sup>`;
-        noteHeading.setAttribute("aria-label", `Note to finger: ${noteLabel(currentNote.name)} ${currentNote.octave}`);
+        noteHeading.textContent = currentNote.name;
+        noteHeading.setAttribute("aria-label", `Note to finger: ${noteLabel(currentNote.name)}`);
         const staffPosition = staffOffsets[currentNote.name[0]] + (currentNote.octave - 4) * 7;
         const noteTop = 70 - staffPosition * 5;
         staffAccidental.textContent = currentNote.name.includes("♯") ? "♯" : currentNote.name.includes("♭") ? "♭" : "";
