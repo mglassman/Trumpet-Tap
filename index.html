@@ -61,8 +61,28 @@
     .round-progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--gold), #ffe17a, var(--mint)); transition: width .25s ease; }
     .prompt-label { color: var(--muted); font-size: 13px; }
     .note {
-      margin: 7px 0 4px; color: var(--ink); font-size: clamp(76px, 24vw, 104px);
+      position: relative; width: fit-content; margin: 7px auto 4px; isolation: isolate;
+      color: var(--ink); font-size: clamp(76px, 24vw, 104px);
       font-weight: 850; letter-spacing: -.075em; line-height: 1.04;
+    }
+    .note.is-sparkling { animation: note-sparkle 1.5s ease-in-out; }
+    .note.is-sparkling::before,
+    .note.is-sparkling::after {
+      position: absolute; z-index: -1; color: #ffe17a; font-size: .38em; line-height: 1;
+      pointer-events: none; animation: note-sparkle-star 1.5s ease-in-out both; content: "✦";
+    }
+    .note.is-sparkling::before { top: 8%; right: -.48em; }
+    .note.is-sparkling::after { bottom: 12%; left: -.48em; color: #ff79c6; animation-delay: .15s; }
+    @keyframes note-sparkle {
+      0%, 100% { text-shadow: none; transform: scale(1); }
+      25%, 70% { text-shadow: 0 0 12px #ffe17a, 0 0 28px #ff79c6; transform: scale(1.07); }
+    }
+    @keyframes note-sparkle-star {
+      0%, 100% { opacity: 0; transform: scale(.2) rotate(-25deg); }
+      30%, 75% { opacity: 1; transform: scale(1.2) rotate(15deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .note.is-sparkling, .note.is-sparkling::before, .note.is-sparkling::after { animation: none; }
     }
 
     .staff { position: relative; width: 190px; height: 84px; margin: 18px auto 4px; }
@@ -150,7 +170,10 @@
 
     .feedback { min-height: 23px; margin: 13px 0 3px; color: var(--muted); text-align: center; font-size: 13px; font-weight: 700; }
     .feedback.correct { color: var(--mint); }
-    .feedback.incorrect { color: var(--red); }
+    .feedback.incorrect {
+      padding: 6px 10px; border: 1px solid var(--red); border-radius: 10px;
+      color: var(--ink); background: #702344; font-weight: 850;
+    }
     .actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
     .cancel-round {
       min-height: 42px;       border: 1px solid #5b527d; border-radius: 13px;
@@ -269,7 +292,7 @@
       .score-row { margin-bottom: 6px; }
       .card { padding: 14px 14px 12px; }
       .round-progress { margin-bottom: 10px; }
-      .note { margin: 2px 0; font-size: clamp(60px, 18vw, 72px); }
+      .note { margin: 2px auto; font-size: clamp(60px, 18vw, 72px); }
       .staff { height: 76px; margin: 8px auto 0; }
       .staff-clef { top: 10px; font-size: 70px; }
       .level-selector { margin: 8px 0 6px; }
@@ -716,6 +739,7 @@
 
       function nextNote() {
         window.clearTimeout(nextTimer);
+        noteHeading.classList.remove("is-sparkling");
         if (questionsAnswered >= roundLength) {
           finishRound();
           return;
@@ -780,6 +804,7 @@
         const correct = selected.length === currentNote.valves.length &&
           selected.every((valve, index) => valve === currentNote.valves[index]);
         if (correct) {
+          noteHeading.classList.add("is-sparkling");
           correctCount += 1;
           questionsAnswered += 1;
           scoreDisplay.textContent = `${correctCount} / ${roundLength} correct`;
@@ -790,10 +815,11 @@
           roundDisplay.textContent = `Round ${questionsAnswered} / ${roundLength}`;
           progressBar.setAttribute("aria-valuenow", String(questionsAnswered));
           progressFill.style.width = `${questionsAnswered / roundLength * 100}%`;
+          const sparkleDuration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1500;
           if (questionsAnswered === roundLength) {
-            finishRound();
+            nextTimer = window.setTimeout(finishRound, sparkleDuration);
           } else {
-            nextTimer = window.setTimeout(nextNote, 850);
+            nextTimer = window.setTimeout(nextNote, sparkleDuration);
           }
         } else {
           retryCount += 1;
