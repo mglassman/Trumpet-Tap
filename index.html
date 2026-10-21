@@ -105,22 +105,45 @@
     .play-controls { position: relative; }
     .valves { display: flex; justify-content: center; gap: 12px; }
     .valve {
-      display: flex; min-width: 82px; min-height: 94px; flex-direction: column; align-items: center;
-      justify-content: center; gap: 8px; border: 1px solid #425660; border-radius: 17px;
-      color: var(--ink); background: #14232c; cursor: pointer; touch-action: manipulation;
+      position: relative; display: flex; min-width: 82px; min-height: 94px; flex-direction: column; align-items: center;
+      justify-content: flex-end; gap: 4px; padding: 0 8px 8px; overflow: hidden;
+      border: 1px solid #425660; border-radius: 17px;
+      color: var(--ink); background: linear-gradient(145deg, #192b35, #101e27); cursor: pointer; touch-action: manipulation;
       transition: transform .12s, border-color .12s, background .12s, box-shadow .12s;
       -webkit-tap-highlight-color: transparent;
     }
+    .valve::before {
+      position: absolute; bottom: 25px; left: 50%; width: 36px; height: 43px; border: 2px solid #718087;
+      border-radius: 8px 8px 11px 11px; background: linear-gradient(90deg, #334650, #182a34 32%, #344852 70%, #1a2c35);
+      box-shadow: inset 0 0 0 3px #101b2466, 0 3px 7px #0005; content: ""; transform: translateX(-50%);
+    }
+    .valve::after {
+      position: absolute; top: 29px; left: 50%; width: 7px; height: 19px; border: 1px solid #aab7b8;
+      border-radius: 3px 3px 0 0; background: linear-gradient(90deg, #667981, #d1d5c9 50%, #63757b);
+      content: ""; transform: translateX(-50%); transition: top .16s ease;
+    }
     .valve:active { transform: scale(.96); }
     .valve[aria-pressed="true"] {
-      border-color: var(--gold); background: #3a3021; box-shadow: inset 0 0 0 1px #f2bd5833, 0 5px 18px #0002;
+      border-color: #8f692f; background: linear-gradient(145deg, #30291f, #172630); box-shadow: inset 0 0 0 1px #f2bd5833, 0 5px 18px #0002;
     }
     .valve:focus-visible, button:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
     .valve-number {
-      display: grid; place-items: center; width: 39px; height: 39px; border: 2px solid #718087;
-      border-radius: 50%; color: var(--muted); font-size: 17px; font-weight: 850;
+      position: absolute; top: 7px; left: 50%; z-index: 1; display: grid; place-items: center;
+      width: 39px; height: 39px; border: 2px solid #9ba9a9; border-radius: 50%;
+      color: #f5f2e9; background: linear-gradient(145deg, #435760, #243741);
+      box-shadow: 0 3px 5px #0006; font-size: 17px; font-weight: 850;
+      transform: translateX(-50%); transition: top .16s ease, border-color .16s, background .16s;
     }
-    .valve[aria-pressed="true"] .valve-number { border-color: var(--gold); color: var(--gold); }
+    .valve-position {
+      position: relative; z-index: 1; color: var(--muted); font-size: 9px;
+      font-weight: 850; letter-spacing: .12em; line-height: 1;
+    }
+    .valve[aria-pressed="true"]::after { top: 39px; }
+    .valve[aria-pressed="true"] .valve-number {
+      top: 17px; border-color: var(--gold); color: #21190d;
+      background: linear-gradient(145deg, #ffdc8c, var(--gold)); box-shadow: 0 2px 3px #0007;
+    }
+    .valve[aria-pressed="true"] .valve-position { color: var(--gold); }
 
     .feedback { min-height: 23px; margin: 13px 0 3px; color: var(--muted); text-align: center; font-size: 13px; font-weight: 700; }
     .feedback.correct { color: var(--mint); }
@@ -255,12 +278,15 @@
         <div class="valves" aria-label="Trumpet valves">
           <button class="valve" type="button" aria-pressed="false" aria-label="Valve 1, first valve">
             <span class="valve-number">1</span>
+            <span class="valve-position" aria-hidden="true">UP</span>
           </button>
           <button class="valve" type="button" aria-pressed="false" aria-label="Valve 2, second valve">
             <span class="valve-number">2</span>
+            <span class="valve-position" aria-hidden="true">UP</span>
           </button>
           <button class="valve" type="button" aria-pressed="false" aria-label="Valve 3, third valve">
             <span class="valve-number">3</span>
+            <span class="valve-position" aria-hidden="true">UP</span>
           </button>
         </div>
 
@@ -539,6 +565,7 @@
         ledgerLine.hidden = !(currentNote.name === "C" && currentNote.octave === 4);
         valveButtons.forEach(button => {
           button.setAttribute("aria-pressed", "false");
+          button.querySelector(".valve-position").textContent = "UP";
           button.disabled = !roundActive;
         });
         feedback.textContent = roundActive
@@ -565,6 +592,7 @@
           if (!roundActive) return;
           const pressed = button.getAttribute("aria-pressed") === "true";
           button.setAttribute("aria-pressed", String(!pressed));
+          button.querySelector(".valve-position").textContent = pressed ? "UP" : "DOWN";
           feedback.textContent = "Ready when you are — check your answer.";
           feedback.className = "feedback";
         });
