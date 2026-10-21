@@ -329,7 +329,7 @@
       <div class="eyebrow" aria-live="polite">Ready to play</div>
       <div class="round-meta">
         <div class="score" aria-live="polite">0 / 10 correct</div>
-        <div class="timer" aria-label="Elapsed time">00:00</div>
+        <div class="timer" aria-label="Elapsed time">0:00</div>
       </div>
     </div>
 
@@ -338,7 +338,7 @@
         <div class="round-progress-fill"></div>
       </div>
       <div class="prompt">
-        <div class="prompt-label">Which valves do you press for</div>
+        <div class="prompt-label" hidden>Which valves do you press for</div>
         <h1 class="note" id="question" aria-label="Note to finger: C">C</h1>
         <div class="staff" aria-hidden="true">
           <span class="staff-lines"></span>
@@ -406,7 +406,7 @@
           <span class="results-stat-label">Correct</span>
         </div>
         <div class="results-stat">
-          <span class="results-stat-value results-time">00:00</span>
+          <span class="results-stat-value results-time">0:00</span>
           <span class="results-stat-label">Time</span>
         </div>
         <div class="results-stat">
@@ -477,6 +477,7 @@
       const progressFill = document.querySelector(".round-progress-fill");
       const roundGate = document.querySelector(".round-gate");
       const roundIntro = document.querySelector(".round-intro");
+      const promptLabel = document.querySelector(".prompt-label");
       const startButton = document.querySelector(".round-start");
       const checkButton = document.querySelector(".check");
       const cancelButton = document.querySelector(".cancel-round");
@@ -524,7 +525,7 @@
         questionsAnswered = 0;
         startButton.textContent = "Start 10-note round";
         scoreDisplay.textContent = `0 / ${roundLength} correct`;
-        timerDisplay.textContent = "00:00";
+        timerDisplay.textContent = "0:00";
         progressBar.setAttribute("aria-valuenow", "0");
         progressFill.style.width = "0%";
         feedback.textContent = "Choose a level, then start your round.";
@@ -535,7 +536,7 @@
 
       function formatTime(milliseconds) {
         const seconds = Math.floor(milliseconds / 1000);
-        return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+        return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
       }
 
       function updateTimer() {
@@ -571,10 +572,11 @@
           [roundNotes[index], roundNotes[swapIndex]] = [roundNotes[swapIndex], roundNotes[index]];
         }
         roundActive = true;
+        promptLabel.hidden = false;
         roundStartedAt = performance.now();
         scoreDisplay.textContent = `0 / ${roundLength} correct`;
         roundDisplay.textContent = `Round 0 / ${roundLength}`;
-        timerDisplay.textContent = "00:00";
+        timerDisplay.textContent = "0:00";
         progressBar.setAttribute("aria-valuenow", "0");
         progressFill.style.width = "0%";
         roundGate.hidden = true;
@@ -596,6 +598,7 @@
 
       function finishRound(timedOut = false) {
         roundActive = false;
+        promptLabel.hidden = true;
         window.clearTimeout(nextTimer);
         window.clearInterval(timerInterval);
         const elapsedMilliseconds = timedOut ? roundTimeLimit : performance.now() - roundStartedAt;
@@ -626,6 +629,7 @@
         window.clearInterval(timerInterval);
         roundIntro.hidden = true;
         roundActive = false;
+        promptLabel.hidden = true;
         correctCount = 0;
         retryCount = 0;
         questionsAnswered = 0;
@@ -633,7 +637,7 @@
         roundStartedAt = 0;
         scoreDisplay.textContent = `0 / ${roundLength} correct`;
         roundDisplay.textContent = "Ready to play";
-        timerDisplay.textContent = "00:00";
+        timerDisplay.textContent = "0:00";
         progressBar.setAttribute("aria-valuenow", "0");
         progressFill.style.width = "0%";
         startButton.textContent = "Start 10-note round";
