@@ -70,7 +70,7 @@
     }
     .staff-note {
       position: absolute; left: 50%; z-index: 1; width: 17px; height: 11px;
-      border: 2px solid var(--gold); border-radius: 50%; background: var(--panel);
+      border: 2px solid var(--gold); border-radius: 50%;
       transform: translate(-50%, -50%) rotate(-18deg);
     }
     .staff-accidental {
@@ -149,6 +149,12 @@
     .feedback.correct { color: var(--mint); }
     .feedback.incorrect { color: var(--red); }
     .actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+    .cancel-round {
+      min-height: 42px; border: 1px solid #425660; border-radius: 13px;
+      color: var(--muted); background: #14232c; cursor: pointer; font: inherit;
+      font-size: 13px; font-weight: 750; touch-action: manipulation;
+    }
+    .cancel-round:hover { border-color: var(--red); color: var(--red); }
     .round-gate {
       position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; padding: 20px;
       border: 1px solid #40525c; border-radius: 20px;
@@ -316,6 +322,7 @@
         <div class="feedback" role="status" aria-live="polite">Tap the valves, then check your answer.</div>
         <div class="actions">
           <button class="action check" type="button" disabled hidden>Check answer</button>
+          <button class="cancel-round" type="button" hidden>Cancel round</button>
         </div>
         <div class="round-gate">
           <button class="action round-start" type="button">Start 10-note round</button>
@@ -419,6 +426,7 @@
       const roundIntro = document.querySelector(".round-intro");
       const startButton = document.querySelector(".round-start");
       const checkButton = document.querySelector(".check");
+      const cancelButton = document.querySelector(".cancel-round");
       const resultsDialog = document.querySelector(".results-dialog");
       const resultsTitle = document.querySelector(".results-title");
       const resultsScore = document.querySelector(".results-score");
@@ -515,8 +523,12 @@
           roundIntro.hidden = true;
         }, 4000);
         checkButton.hidden = false;
+        cancelButton.hidden = false;
         checkButton.textContent = "Check answer";
-        levelButtons.forEach(button => { button.disabled = true; });
+        levelButtons.forEach(button => {
+          button.disabled = true;
+          button.hidden = button.getAttribute("aria-pressed") !== "true";
+        });
         updateTimer();
         timerInterval = window.setInterval(updateTimer, 1000);
         nextNote();
@@ -533,12 +545,51 @@
         startButton.textContent = "Play again";
         roundGate.hidden = false;
         checkButton.hidden = true;
+        cancelButton.hidden = true;
         checkButton.disabled = true;
         valveButtons.forEach(button => { button.disabled = true; });
-        levelButtons.forEach(button => { button.disabled = false; });
+        levelButtons.forEach(button => {
+          button.disabled = false;
+          button.hidden = false;
+        });
         feedback.textContent = `Round complete! You got ${correctCount} / ${roundLength} correct in ${elapsedTime}.`;
         feedback.className = "feedback correct";
         showResults(elapsedMilliseconds, elapsedTime);
+      }
+
+      function cancelRound() {
+        if (!roundActive) return;
+        window.clearTimeout(nextTimer);
+        window.clearTimeout(roundIntroTimer);
+        window.clearInterval(timerInterval);
+        roundIntro.hidden = true;
+        roundActive = false;
+        correctCount = 0;
+        retryCount = 0;
+        questionsAnswered = 0;
+        roundNotes = [];
+        roundStartedAt = 0;
+        scoreDisplay.textContent = `0 / ${roundLength} correct`;
+        roundDisplay.textContent = "Ready to play";
+        timerDisplay.textContent = "00:00";
+        progressBar.setAttribute("aria-valuenow", "0");
+        progressFill.style.width = "0%";
+        startButton.textContent = "Start 10-note round";
+        roundGate.hidden = false;
+        checkButton.hidden = true;
+        checkButton.disabled = true;
+        cancelButton.hidden = true;
+        valveButtons.forEach(button => {
+          button.disabled = true;
+          button.setAttribute("aria-pressed", "false");
+          button.querySelector(".valve-position").textContent = "UP";
+        });
+        levelButtons.forEach(button => {
+          button.disabled = false;
+          button.hidden = false;
+        });
+        feedback.textContent = "Choose a level, then start your round.";
+        feedback.className = "feedback";
       }
 
       function showResults(elapsedMilliseconds, elapsedTime) {
@@ -682,6 +733,7 @@
       });
 
       startButton.addEventListener("click", startRound);
+      cancelButton.addEventListener("click", cancelRound);
       replayButton.addEventListener("click", startRound);
       closeResultsButton.addEventListener("click", () => resultsDialog.close());
       nextNote();
