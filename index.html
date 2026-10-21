@@ -45,6 +45,8 @@
     .score-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .eyebrow { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
     .score { color: var(--gold); font-size: 13px; font-weight: 750; }
+    .round-meta { display: flex; align-items: center; gap: 12px; }
+    .timer { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; font-weight: 750; }
     .card {
       overflow: hidden; padding: 22px 20px 20px; border: 1px solid #314550;
       border-radius: 24px; background: linear-gradient(145deg, #1d303a, var(--panel) 75%);
@@ -52,6 +54,8 @@
     }
 
     .prompt { text-align: center; }
+    .round-progress { height: 5px; margin: 0 0 20px; overflow: hidden; border-radius: 999px; background: #314550; }
+    .round-progress-fill { width: 0; height: 100%; border-radius: inherit; background: var(--gold); transition: width .25s ease; }
     .prompt-label { color: var(--muted); font-size: 13px; }
     .note {
       margin: 7px 0 4px; color: var(--ink); font-size: clamp(76px, 24vw, 104px);
@@ -72,8 +76,9 @@
       transform: translate(-50%, -50%) rotate(-18deg);
     }
     .staff-accidental {
-      position: absolute; left: calc(50% - 18px); z-index: 2; color: var(--gold);
-      font: 30px Georgia, serif; line-height: 1; transform: translateY(-50%);
+      position: absolute; left: calc(50% - 28px); z-index: 2; color: var(--gold);
+      display: grid; place-items: center; width: 20px; height: 30px;
+      font: 30px/1 Georgia, serif; transform: translateY(-50%);
       pointer-events: none;
     }
     .ledger-line {
@@ -117,24 +122,20 @@
       border-radius: 50%; color: var(--muted); font-size: 17px; font-weight: 850;
     }
     .valve[aria-pressed="true"] .valve-number { border-color: var(--gold); color: var(--gold); }
-    .valve-caption { color: var(--muted); font-size: 11px; font-weight: 700; }
 
     .feedback { min-height: 23px; margin: 13px 0 3px; color: var(--muted); text-align: center; font-size: 13px; font-weight: 700; }
     .feedback.correct { color: var(--mint); }
     .feedback.incorrect { color: var(--red); }
-    .actions { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 10px; }
+    .actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
     button.action {
       min-height: 52px; border: 0; border-radius: 15px; cursor: pointer; font: inherit;
       font-size: 14px; font-weight: 800; touch-action: manipulation;
     }
     button.action:disabled { cursor: default; opacity: .7; }
+    button.action.start { grid-column: 1 / -1; color: #21190d; background: var(--gold); box-shadow: 0 5px 0 var(--gold-dark); }
     .check { color: #21190d; background: var(--gold); box-shadow: 0 5px 0 var(--gold-dark); }
     .check:active { transform: translateY(2px); box-shadow: 0 3px 0 var(--gold-dark); }
-    .next { min-width: 54px; padding: 0 16px; border: 1px solid #425660 !important; color: var(--ink); background: var(--panel-light); }
-    .next span { font-size: 20px; }
 
-    .helper { margin: 20px 2px 0; color: var(--muted); text-align: center; font-size: 12px; line-height: 1.55; }
-    .helper strong { color: #d8e0df; }
     @media (max-width: 360px) {
       body { padding-right: 12px; padding-left: 12px; }
       .card { padding-right: 15px; padding-left: 15px; }
@@ -154,11 +155,17 @@
     </header>
 
     <div class="score-row">
-      <div class="eyebrow">Your turn</div>
-      <div class="score" aria-live="polite">0 correct</div>
+      <div class="eyebrow" aria-live="polite">Ready to play</div>
+      <div class="round-meta">
+        <div class="score" aria-live="polite">0 / 10 correct</div>
+        <div class="timer" aria-label="Elapsed time">00:00</div>
+      </div>
     </div>
 
     <section class="card" aria-labelledby="question">
+      <div class="round-progress" role="progressbar" aria-label="Round progress" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0">
+        <div class="round-progress-fill"></div>
+      </div>
       <div class="prompt">
         <div class="prompt-label">Which valves do you press for</div>
         <h1 class="note" id="question" aria-label="Note to finger">C<sup>4</sup></h1>
@@ -181,24 +188,23 @@
       <h2 class="question-title">Choose your valves</h2>
       <div class="valves" aria-label="Trumpet valves">
         <button class="valve" type="button" aria-pressed="false" aria-label="Valve 1, first valve">
-          <span class="valve-number">1</span><span class="valve-caption">FIRST</span>
+          <span class="valve-number">1</span>
         </button>
         <button class="valve" type="button" aria-pressed="false" aria-label="Valve 2, second valve">
-          <span class="valve-number">2</span><span class="valve-caption">SECOND</span>
+          <span class="valve-number">2</span>
         </button>
         <button class="valve" type="button" aria-pressed="false" aria-label="Valve 3, third valve">
-          <span class="valve-number">3</span><span class="valve-caption">THIRD</span>
+          <span class="valve-number">3</span>
         </button>
       </div>
 
       <div class="feedback" role="status" aria-live="polite">Tap the valves, then check your answer.</div>
       <div class="actions">
-        <button class="action check" type="button">Check answer</button>
-        <button class="action next" type="button" aria-label="Skip to next note"><span aria-hidden="true">↻</span></button>
+        <button class="action start" type="button">Start 10-note round</button>
+        <button class="action check" type="button" disabled hidden>Check answer</button>
       </div>
     </section>
 
-    <p class="helper"><strong>How to play:</strong> Tap each valve you would press, then check your answer. The note names are in written pitch and include sharps and flats.</p>
   </main>
 
   <script>
@@ -234,25 +240,7 @@
         { name: "G♭", octave: 5, valves: [2] },
         { name: "G", octave: 5, valves: [] }
       ];
-      const pitchOffsets = {
-        C: 0,
-        "C♯": 1,
-        "D♭": 1,
-        D: 2,
-        "D♯": 3,
-        "E♭": 3,
-        E: 4,
-        F: 5,
-        "F♯": 6,
-        "G♭": 6,
-        G: 7,
-        "G♯": 8,
-        "A♭": 8,
-        A: 9,
-        "A♯": 10,
-        "B♭": 10,
-        B: 11
-      };
+      const staffOffsets = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 };
       const naturalNotes = notes.filter(note => !note.name.includes("♯") && !note.name.includes("♭"));
       const flatNotes = notes.filter(note => !note.name.includes("♯"));
       const levelSets = { 1: naturalNotes, 2: flatNotes, 3: notes };
@@ -264,13 +252,22 @@
       const ledgerLine = document.querySelector(".ledger-line");
       const feedback = document.querySelector(".feedback");
       const scoreDisplay = document.querySelector(".score");
+      const roundDisplay = document.querySelector(".eyebrow");
+      const timerDisplay = document.querySelector(".timer");
+      const progressBar = document.querySelector(".round-progress");
+      const progressFill = document.querySelector(".round-progress-fill");
+      const startButton = document.querySelector(".start");
       const checkButton = document.querySelector(".check");
-      const nextButton = document.querySelector(".next");
+      const roundLength = 10;
       let currentNote;
       let correctCount = 0;
+      let questionsAnswered = 0;
       let previousIndex = -1;
       let currentLevel = 1;
       let nextTimer;
+      let timerInterval;
+      let roundStartedAt = 0;
+      let roundActive = false;
 
       function noteLabel(noteName) {
         return noteName
@@ -279,23 +276,72 @@
       }
 
       function setLevel(level) {
+        if (roundActive) return;
         currentLevel = level;
         levelButtons.forEach(button => {
           const active = Number(button.dataset.level) === level;
           button.setAttribute("aria-pressed", String(active));
         });
-        correctCount = 0;
-        scoreDisplay.textContent = "0 correct";
         previousIndex = -1;
-        feedback.textContent = "Tap the valves, then check your answer.";
+        feedback.textContent = "Choose a level, then start your round.";
         feedback.className = "feedback";
         window.clearTimeout(nextTimer);
-        checkButton.disabled = false;
         nextNote();
+      }
+
+      function formatTime(milliseconds) {
+        const seconds = Math.floor(milliseconds / 1000);
+        return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+      }
+
+      function updateTimer() {
+        timerDisplay.textContent = formatTime(performance.now() - roundStartedAt);
+      }
+
+      function startRound() {
+        window.clearTimeout(nextTimer);
+        window.clearInterval(timerInterval);
+        correctCount = 0;
+        questionsAnswered = 0;
+        previousIndex = -1;
+        roundActive = true;
+        roundStartedAt = performance.now();
+        scoreDisplay.textContent = `0 / ${roundLength} correct`;
+        roundDisplay.textContent = `Round 0 / ${roundLength}`;
+        timerDisplay.textContent = "00:00";
+        progressBar.setAttribute("aria-valuenow", "0");
+        progressFill.style.width = "0%";
+        startButton.hidden = true;
+        checkButton.hidden = false;
+        checkButton.textContent = "Check answer";
+        levelButtons.forEach(button => { button.disabled = true; });
+        updateTimer();
+        timerInterval = window.setInterval(updateTimer, 1000);
+        nextNote();
+      }
+
+      function finishRound() {
+        roundActive = false;
+        window.clearTimeout(nextTimer);
+        window.clearInterval(timerInterval);
+        updateTimer();
+        roundDisplay.textContent = "Round complete!";
+        startButton.textContent = "Play again";
+        startButton.hidden = false;
+        checkButton.hidden = true;
+        checkButton.disabled = true;
+        valveButtons.forEach(button => { button.disabled = true; });
+        levelButtons.forEach(button => { button.disabled = false; });
+        feedback.textContent = `Round complete! You got ${correctCount} / ${roundLength} correct in ${timerDisplay.textContent}.`;
+        feedback.className = "feedback correct";
       }
 
       function nextNote() {
         window.clearTimeout(nextTimer);
+        if (questionsAnswered >= roundLength) {
+          finishRound();
+          return;
+        }
         const availableNotes = levelSets[currentLevel];
         let index;
         do {
@@ -305,17 +351,27 @@
         currentNote = availableNotes[index];
         noteHeading.innerHTML = `${currentNote.name}<sup>${currentNote.octave}</sup>`;
         noteHeading.setAttribute("aria-label", `Note to finger: ${noteLabel(currentNote.name)} ${currentNote.octave}`);
-        const pitchIndex = pitchOffsets[currentNote.name] + (currentNote.octave - 4) * 12;
-        const noteTop = 64 - pitchIndex * 2.4;
+        const staffPosition = staffOffsets[currentNote.name[0]] + (currentNote.octave - 4) * 7;
+        const noteTop = 70 - staffPosition * 5;
         staffAccidental.textContent = currentNote.name.includes("♯") ? "♯" : currentNote.name.includes("♭") ? "♭" : "";
         staffNote.style.top = `${noteTop}px`;
         staffAccidental.style.top = `${noteTop}px`;
         ledgerLine.style.top = `${noteTop}px`;
         ledgerLine.hidden = !(currentNote.name === "C" && currentNote.octave === 4);
-        valveButtons.forEach(button => button.setAttribute("aria-pressed", "false"));
-        feedback.textContent = "Tap the valves, then check your answer.";
+        valveButtons.forEach(button => {
+          button.setAttribute("aria-pressed", "false");
+          button.disabled = !roundActive;
+        });
+        feedback.textContent = roundActive
+          ? "Tap the valves, then check your answer."
+          : "Choose a level, then start your round.";
         feedback.className = "feedback";
-        checkButton.disabled = false;
+        checkButton.disabled = !roundActive;
+        roundDisplay.textContent = roundActive
+          ? `Round ${questionsAnswered + 1} / ${roundLength}`
+          : "Ready to play";
+        progressBar.setAttribute("aria-valuenow", String(questionsAnswered));
+        progressFill.style.width = `${questionsAnswered / roundLength * 100}%`;
       }
 
       function selectedValves() {
@@ -327,6 +383,7 @@
 
       valveButtons.forEach(button => {
         button.addEventListener("click", () => {
+          if (!roundActive) return;
           const pressed = button.getAttribute("aria-pressed") === "true";
           button.setAttribute("aria-pressed", String(!pressed));
           feedback.textContent = "Ready when you are — check your answer.";
@@ -335,17 +392,26 @@
       });
 
       checkButton.addEventListener("click", () => {
-        if (checkButton.disabled) return;
+        if (checkButton.disabled || !roundActive) return;
         const selected = selectedValves();
         const correct = selected.length === currentNote.valves.length &&
           selected.every((valve, index) => valve === currentNote.valves[index]);
         if (correct) {
           correctCount += 1;
-          scoreDisplay.textContent = `${correctCount} correct`;
+          questionsAnswered += 1;
+          scoreDisplay.textContent = `${correctCount} / ${roundLength} correct`;
           feedback.textContent = "That's right! Nice work.";
           feedback.className = "feedback correct";
           checkButton.disabled = true;
-          nextTimer = window.setTimeout(nextNote, 850);
+          valveButtons.forEach(button => { button.disabled = true; });
+          roundDisplay.textContent = `Round ${questionsAnswered} / ${roundLength}`;
+          progressBar.setAttribute("aria-valuenow", String(questionsAnswered));
+          progressFill.style.width = `${questionsAnswered / roundLength * 100}%`;
+          if (questionsAnswered === roundLength) {
+            finishRound();
+          } else {
+            nextTimer = window.setTimeout(nextNote, 850);
+          }
         } else {
           const answer = currentNote.valves.length ? currentNote.valves.join(" + ") : "open (no valves)";
           feedback.textContent = `Not quite. Try again — the answer is ${answer}.`;
@@ -357,7 +423,7 @@
         button.addEventListener("click", () => setLevel(Number(button.dataset.level)));
       });
 
-      nextButton.addEventListener("click", () => nextNote());
+      startButton.addEventListener("click", startRound);
       nextNote();
     })();
   </script>
