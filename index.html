@@ -82,6 +82,18 @@
     }
     .staff-clef { position: absolute; left: 1px; top: -8px; color: var(--gold); font: 42px Georgia, serif; }
 
+    .level-selector { display: flex; justify-content: center; gap: 8px; margin: 14px 0 12px; }
+    .level-button {
+      min-width: 70px; min-height: 34px; padding: 0 10px; border: 1px solid #425660; border-radius: 999px;
+      color: var(--muted); background: rgba(17, 31, 38, .72); cursor: pointer; font: inherit;
+      font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+      transition: border-color .12s, color .12s, background .12s, transform .12s;
+    }
+    .level-button[aria-pressed="true"] {
+      border-color: var(--gold); background: rgba(242, 189, 88, .12); color: var(--gold);
+    }
+    .level-button:active { transform: scale(.98); }
+
     .question-title { margin: 19px 0 13px; text-align: center; font-size: 15px; font-weight: 750; }
     .valves { display: flex; justify-content: center; gap: 12px; }
     .valve {
@@ -154,6 +166,12 @@
           <span class="staff-accidental"></span>
           <span class="staff-note"></span>
         </div>
+      </div>
+
+      <div class="level-selector" aria-label="Practice level selector">
+        <button class="level-button" type="button" data-level="1" aria-pressed="true">Level 1</button>
+        <button class="level-button" type="button" data-level="2" aria-pressed="false">Level 2</button>
+        <button class="level-button" type="button" data-level="3" aria-pressed="false">Level 3</button>
       </div>
 
       <h2 class="question-title">Choose your valves</h2>
@@ -231,7 +249,11 @@
         "B♭": 10,
         B: 11
       };
+      const naturalNotes = notes.filter(note => !note.name.includes("♯") && !note.name.includes("♭"));
+      const flatNotes = notes.filter(note => !note.name.includes("♯"));
+      const levelSets = { 1: naturalNotes, 2: flatNotes, 3: notes };
       const valveButtons = [...document.querySelectorAll(".valve")];
+      const levelButtons = [...document.querySelectorAll(".level-button")];
       const noteHeading = document.querySelector(".note");
       const staffNote = document.querySelector(".staff-note");
       const staffAccidental = document.querySelector(".staff-accidental");
@@ -243,6 +265,7 @@
       let currentNote;
       let correctCount = 0;
       let previousIndex = -1;
+      let currentLevel = 1;
       let nextTimer;
 
       function noteLabel(noteName) {
@@ -251,14 +274,31 @@
           .replace("♭", " flat");
       }
 
+      function setLevel(level) {
+        currentLevel = level;
+        levelButtons.forEach(button => {
+          const active = Number(button.dataset.level) === level;
+          button.setAttribute("aria-pressed", String(active));
+        });
+        correctCount = 0;
+        scoreDisplay.textContent = "0 correct";
+        previousIndex = -1;
+        feedback.textContent = "Tap the valves, then check your answer.";
+        feedback.className = "feedback";
+        window.clearTimeout(nextTimer);
+        checkButton.disabled = false;
+        nextNote();
+      }
+
       function nextNote() {
         window.clearTimeout(nextTimer);
+        const availableNotes = levelSets[currentLevel];
         let index;
         do {
-          index = Math.floor(Math.random() * notes.length);
-        } while (index === previousIndex);
+          index = Math.floor(Math.random() * availableNotes.length);
+        } while (availableNotes.length > 1 && index === previousIndex);
         previousIndex = index;
-        currentNote = notes[index];
+        currentNote = availableNotes[index];
         noteHeading.innerHTML = `${currentNote.name}<sup>${currentNote.octave}</sup>`;
         noteHeading.setAttribute("aria-label", `Note to finger: ${noteLabel(currentNote.name)} ${currentNote.octave}`);
         const pitchIndex = pitchOffsets[currentNote.name] + (currentNote.octave - 4) * 12;
@@ -309,7 +349,11 @@
         }
       });
 
-      nextButton.addEventListener("click", nextNote);
+      levelButtons.forEach(button => {
+        button.addEventListener("click", () => setLevel(Number(button.dataset.level)));
+      });
+
+      nextButton.addEventListener("click", () => nextNote());
       nextNote();
     })();
   </script>
