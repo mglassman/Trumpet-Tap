@@ -76,7 +76,7 @@
     .staff-accidental {
       position: absolute; left: calc(50% - 28px); z-index: 2; color: var(--gold);
       display: grid; place-items: center; width: 20px; height: 30px;
-      font: 30px/1 Georgia, serif; transform: translateY(-50%);
+      font: 30px/1 Georgia, serif; transform: translateY(calc(-50% - 3px));
       pointer-events: none;
     }
     .ledger-line {
@@ -393,7 +393,15 @@
           const active = Number(button.dataset.level) === level;
           button.setAttribute("aria-pressed", String(active));
         });
+        correctCount = 0;
+        retryCount = 0;
+        questionsAnswered = 0;
         previousIndex = -1;
+        startButton.textContent = "Start 10-note round";
+        scoreDisplay.textContent = `0 / ${roundLength} correct`;
+        timerDisplay.textContent = "00:00";
+        progressBar.setAttribute("aria-valuenow", "0");
+        progressFill.style.width = "0%";
         feedback.textContent = "Choose a level, then start your round.";
         feedback.className = "feedback";
         window.clearTimeout(nextTimer);
