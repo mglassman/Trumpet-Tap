@@ -80,7 +80,11 @@
       position: absolute; left: 50%; width: 27px; height: 1px; background: #85949a;
       transform: translate(-50%, -50%);
     }
-    .staff-clef { position: absolute; left: 1px; top: -8px; color: var(--gold); font: 42px Georgia, serif; }
+    .staff-clef {
+      position: absolute; left: 0; top: 4px; z-index: 2; color: var(--gold);
+      font: 58px/1 Georgia, "Times New Roman", serif; letter-spacing: -.04em;
+      transform: translateY(-6px);
+    }
 
     .level-selector { display: flex; justify-content: center; gap: 8px; margin: 14px 0 12px; }
     .level-button {
