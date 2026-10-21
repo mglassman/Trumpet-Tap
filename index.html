@@ -260,6 +260,30 @@
       .valves { gap: 8px; }
       .valve { min-width: 75px; }
     }
+    @media (max-width: 600px) and (max-height: 760px) {
+      body { padding: max(10px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)); }
+      header { margin-bottom: 12px; }
+      .score-row { margin-bottom: 6px; }
+      .card { padding: 14px 14px 12px; }
+      .round-progress { margin-bottom: 10px; }
+      .note { margin: 2px 0; font-size: clamp(60px, 18vw, 72px); }
+      .staff { height: 76px; margin: 8px auto 0; }
+      .staff-clef { top: 10px; font-size: 56px; }
+      .level-selector { margin: 8px 0 6px; }
+      .question-title { margin: 10px 0 8px; }
+      .valve { min-height: 78px; }
+      .valve::before { bottom: 21px; height: 36px; }
+      .valve::after { top: 22px; }
+      .valve[aria-pressed="true"]::after { top: 30px; }
+      .valve-number { top: 4px; width: 34px; height: 34px; font-size: 15px; }
+      .valve[aria-pressed="true"] .valve-number { top: 11px; }
+      .feedback { min-height: 20px; margin: 8px 0 2px; font-size: 12px; }
+      .actions { gap: 6px; margin-top: 6px; }
+      .check { min-height: 46px !important; }
+      .cancel-round { min-height: 36px; }
+      .round-gate { padding: 12px; }
+      button.action.round-start { min-height: 58px; }
+    }
   </style>
 </head>
 <body>
