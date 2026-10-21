@@ -3,19 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#101b24">
+  <meta name="theme-color" content="#17142f">
   <title>Brass Basics — Trumpet Fingering</title>
   <style>
     :root {
       color-scheme: dark;
-      --ink: #f5f2e9;
-      --muted: #a7b5bc;
-      --panel: #192832;
-      --panel-light: #223540;
-      --gold: #f2bd58;
-      --gold-dark: #b88128;
-      --mint: #89d6b6;
-      --red: #ff9c8f;
+      --ink: #fff8ff;
+      --muted: #c5bfdc;
+      --panel: #252144;
+      --panel-light: #332b59;
+      --gold: #ff79c6;
+      --gold-dark: #b83d91;
+      --mint: #72e5e5;
+      --red: #ff9eaa;
+      --lilac: #b79cff;
       font-family: Inter, ui-rounded, "Arial Rounded MT Bold", system-ui, sans-serif;
     }
 
@@ -27,8 +28,9 @@
       padding: max(22px, env(safe-area-inset-top)) 18px max(26px, env(safe-area-inset-bottom));
       color: var(--ink);
       background:
-        radial-gradient(ellipse at 50% -12%, #36505a 0, transparent 53%),
-        #101b24;
+        radial-gradient(ellipse at 12% 0%, #653e8c 0, transparent 38%),
+        radial-gradient(ellipse at 100% 22%, #174e73 0, transparent 36%),
+        #17142f;
     }
 
     main { width: min(100%, 480px); margin: 0 auto; }
@@ -36,8 +38,8 @@
     header { display: flex; align-items: center; gap: 12px; margin-bottom: 26px; }
     .brand-mark {
       display: grid; place-items: center; width: 42px; height: 42px;
-      border: 1px solid #765b31; border-radius: 14px; color: var(--gold);
-      background: #30281d; font-size: 21px;
+      border: 1px solid #9a5b9c; border-radius: 14px; color: #ffe17a;
+      background: linear-gradient(145deg, #4b2860, #29234b); font-size: 21px;
     }
     .brand { font-size: 14px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
     .brand-sub { margin-top: 3px; color: var(--muted); font-size: 12px; }
@@ -48,14 +50,14 @@
     .round-meta { display: flex; align-items: center; gap: 12px; }
     .timer { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; font-weight: 750; }
     .card {
-      overflow: hidden; padding: 22px 20px 20px; border: 1px solid #314550;
-      border-radius: 24px; background: linear-gradient(145deg, #1d303a, var(--panel) 75%);
+      overflow: hidden; padding: 22px 20px 20px; border: 1px solid #514777;
+      border-radius: 24px; background: linear-gradient(145deg, #30284f, var(--panel) 75%);
       box-shadow: 0 18px 50px #0003;
     }
 
     .prompt { text-align: center; }
-    .round-progress { height: 5px; margin: 0 0 20px; overflow: hidden; border-radius: 999px; background: #314550; }
-    .round-progress-fill { width: 0; height: 100%; border-radius: inherit; background: var(--gold); transition: width .25s ease; }
+    .round-progress { height: 5px; margin: 0 0 20px; overflow: hidden; border-radius: 999px; background: #494267; }
+    .round-progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--gold), #ffe17a, var(--mint)); transition: width .25s ease; }
     .prompt-label { color: var(--muted); font-size: 13px; }
     .note {
       margin: 7px 0 4px; color: var(--ink); font-size: clamp(76px, 24vw, 104px);
@@ -65,7 +67,7 @@
     .staff { position: relative; width: 190px; height: 84px; margin: 18px auto 4px; }
     .staff-lines {
       position: absolute; top: 20px; right: 0; left: 0; height: 41px;
-      background: repeating-linear-gradient(to bottom, #85949a 0 1px, transparent 1px 10px);
+      background: repeating-linear-gradient(to bottom, #aaa1c6 0 1px, transparent 1px 10px);
       opacity: .8;
     }
     .staff-note {
@@ -80,7 +82,7 @@
       pointer-events: none;
     }
     .ledger-line {
-      position: absolute; left: 50%; width: 27px; height: 1px; background: #85949a;
+      position: absolute; left: 50%; width: 27px; height: 1px; background: #aaa1c6;
       transform: translate(-50%, -50%);
     }
     .staff-clef {
@@ -91,13 +93,13 @@
 
     .level-selector { display: flex; justify-content: center; gap: 8px; margin: 14px 0 12px; }
     .level-button {
-      min-width: 70px; min-height: 34px; padding: 0 10px; border: 1px solid #425660; border-radius: 999px;
-      color: var(--muted); background: rgba(17, 31, 38, .72); cursor: pointer; font: inherit;
+      min-width: 70px; min-height: 34px; padding: 0 10px; border: 1px solid #5b527d; border-radius: 999px;
+      color: var(--muted); background: rgba(28, 24, 55, .78); cursor: pointer; font: inherit;
       font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
       transition: border-color .12s, color .12s, background .12s, transform .12s;
     }
     .level-button[aria-pressed="true"] {
-      border-color: var(--gold); background: rgba(242, 189, 88, .12); color: var(--gold);
+      border-color: var(--gold); background: rgba(255, 121, 198, .16); color: #ff9bd5;
     }
     .level-button:active { transform: scale(.98); }
 
@@ -107,30 +109,30 @@
     .valve {
       position: relative; display: flex; min-width: 82px; min-height: 94px; flex-direction: column; align-items: center;
       justify-content: flex-end; gap: 4px; padding: 0 8px 8px; overflow: hidden;
-      border: 1px solid #425660; border-radius: 17px;
-      color: var(--ink); background: linear-gradient(145deg, #192b35, #101e27); cursor: pointer; touch-action: manipulation;
+      border: 1px solid #554d77; border-radius: 17px;
+      color: var(--ink); background: linear-gradient(145deg, #302b52, #211e3e); cursor: pointer; touch-action: manipulation;
       transition: transform .12s, border-color .12s, background .12s, box-shadow .12s;
       -webkit-tap-highlight-color: transparent;
     }
     .valve::before {
-      position: absolute; bottom: 25px; left: 50%; width: 36px; height: 43px; border: 2px solid #718087;
-      border-radius: 8px 8px 11px 11px; background: linear-gradient(90deg, #334650, #182a34 32%, #344852 70%, #1a2c35);
-      box-shadow: inset 0 0 0 3px #101b2466, 0 3px 7px #0005; content: ""; transform: translateX(-50%);
+      position: absolute; bottom: 25px; left: 50%; width: 36px; height: 43px; border: 2px solid #8c80b5;
+      border-radius: 8px 8px 11px 11px; background: linear-gradient(90deg, #594d83, #29244b 32%, #61518b 70%, #302850);
+      box-shadow: inset 0 0 0 3px #17142f66, 0 3px 7px #0005; content: ""; transform: translateX(-50%);
     }
     .valve::after {
-      position: absolute; top: 29px; left: 50%; width: 7px; height: 19px; border: 1px solid #aab7b8;
-      border-radius: 3px 3px 0 0; background: linear-gradient(90deg, #667981, #d1d5c9 50%, #63757b);
+      position: absolute; top: 29px; left: 50%; width: 7px; height: 19px; border: 1px solid #d2c5f4;
+      border-radius: 3px 3px 0 0; background: linear-gradient(90deg, #8c7aac, #fff0ce 50%, #82719f);
       content: ""; transform: translateX(-50%); transition: top .16s ease;
     }
     .valve:active { transform: scale(.96); }
     .valve[aria-pressed="true"] {
-      border-color: #8f692f; background: linear-gradient(145deg, #30291f, #172630); box-shadow: inset 0 0 0 1px #f2bd5833, 0 5px 18px #0002;
+      border-color: #cf56a2; background: linear-gradient(145deg, #482544, #252144); box-shadow: inset 0 0 0 1px #ff79c633, 0 5px 18px #0002;
     }
     .valve:focus-visible, button:focus-visible { outline: 3px solid var(--mint); outline-offset: 3px; }
     .valve-number {
       position: absolute; top: 7px; left: 50%; z-index: 1; display: grid; place-items: center;
-      width: 39px; height: 39px; border: 2px solid #9ba9a9; border-radius: 50%;
-      color: #f5f2e9; background: linear-gradient(145deg, #435760, #243741);
+      width: 39px; height: 39px; border: 2px solid #c5badf; border-radius: 50%;
+      color: #fff8ff; background: linear-gradient(145deg, #655b8a, #383158);
       box-shadow: 0 3px 5px #0006; font-size: 17px; font-weight: 850;
       transform: translateX(-50%); transition: top .16s ease, border-color .16s, background .16s;
     }
@@ -140,8 +142,8 @@
     }
     .valve[aria-pressed="true"]::after { top: 39px; }
     .valve[aria-pressed="true"] .valve-number {
-      top: 17px; border-color: var(--gold); color: #21190d;
-      background: linear-gradient(145deg, #ffdc8c, var(--gold)); box-shadow: 0 2px 3px #0007;
+      top: 17px; border-color: #ffe17a; color: #291936;
+      background: linear-gradient(145deg, #ffe889, var(--gold)); box-shadow: 0 2px 3px #0007;
     }
     .valve[aria-pressed="true"] .valve-position { color: var(--gold); }
 
@@ -150,33 +152,33 @@
     .feedback.incorrect { color: var(--red); }
     .actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
     .cancel-round {
-      min-height: 42px; border: 1px solid #425660; border-radius: 13px;
-      color: var(--muted); background: #14232c; cursor: pointer; font: inherit;
+      min-height: 42px;       border: 1px solid #5b527d; border-radius: 13px;
+      color: var(--muted); background: #211e3e; cursor: pointer; font: inherit;
       font-size: 13px; font-weight: 750; touch-action: manipulation;
     }
     .cancel-round:hover { border-color: var(--red); color: var(--red); }
     .round-gate {
       position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; padding: 20px;
-      border: 1px solid #40525c; border-radius: 20px;
-      background: linear-gradient(145deg, #101b24eF, #14232cf5);
+      border: 1px solid #554b78; border-radius: 20px;
+      background: linear-gradient(145deg, #17142ff0, #252144f5);
       backdrop-filter: blur(5px);
     }
     .round-gate[hidden] { display: none; }
     .round-intro {
       position: fixed; inset: 0; z-index: 20; display: grid; place-items: center;
-      padding: 20px; background: #071118b8; backdrop-filter: blur(5px);
+      padding: 20px; background: #100d28c9; backdrop-filter: blur(5px);
       pointer-events: none; animation: round-intro 4s ease both;
     }
     .round-intro[hidden] { display: none; }
     .round-intro-card {
-      width: min(100%, 330px); padding: 28px 24px; border: 1px solid #765b31;
-      border-radius: 24px; color: var(--ink); background: linear-gradient(145deg, #263d48, #14232c);
+      width: min(100%, 330px); padding: 28px 24px; border: 1px solid #d365b2;
+      border-radius: 24px; color: var(--ink); background: linear-gradient(145deg, #493064, #211e43);
       box-shadow: 0 20px 70px #0008; text-align: center;
       animation: intro-card-enter .35s cubic-bezier(.2,.8,.2,1) both;
     }
-    .round-intro-trumpet { display: block; margin-bottom: 10px; font-size: 58px; line-height: 1; }
+    .round-intro-trumpet { display: block; margin-bottom: 10px; color: #ffe17a; font-size: 58px; line-height: 1; filter: drop-shadow(0 0 12px #ff79c688); }
     .round-intro-title { margin: 0; color: var(--gold); font-size: 24px; font-weight: 900; letter-spacing: -.04em; }
-    .round-intro-message { margin: 7px 0 0; color: #d0dcdf; font-size: 14px; }
+    .round-intro-message { margin: 7px 0 0; color: #e0d9f5; font-size: 14px; }
     @keyframes round-intro {
       0%, 78% { opacity: 1; }
       100% { opacity: 0; }
@@ -186,8 +188,8 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
     button.action.round-start {
-      width: min(100%, 330px); min-height: 68px; border: 1px solid #ffdc8c;
-      color: #21190d; background: linear-gradient(135deg, #ffcf70, var(--gold) 65%);
+      width: min(100%, 330px); min-height: 68px; border: 1px solid #ffc6e8;
+      color: #291936; background: linear-gradient(135deg, #ffe889, var(--gold) 58%, #fa83ba);
       box-shadow: 0 7px 0 var(--gold-dark), 0 12px 32px #0006;
       font-size: 16px; transition: transform .12s, box-shadow .12s;
     }
@@ -198,8 +200,8 @@
       font-size: 14px; font-weight: 800; touch-action: manipulation;
     }
     button.action:disabled { cursor: default; opacity: .7; }
-    button.action.start { grid-column: 1 / -1; color: #21190d; background: var(--gold); box-shadow: 0 5px 0 var(--gold-dark); }
-    .check { color: #21190d; background: var(--gold); box-shadow: 0 5px 0 var(--gold-dark); }
+    button.action.start { grid-column: 1 / -1; color: #291936; background: linear-gradient(135deg, #ffe889, var(--gold) 58%, #fa83ba); box-shadow: 0 5px 0 var(--gold-dark); }
+    .check { color: #291936; background: linear-gradient(135deg, #ffe889, var(--gold) 58%, #fa83ba); box-shadow: 0 5px 0 var(--gold-dark); }
     .check:active { transform: translateY(2px); box-shadow: 0 3px 0 var(--gold-dark); }
 
     .results-dialog {
@@ -208,28 +210,28 @@
       padding: 20px; border: 0; color: var(--ink); background: transparent;
     }
     .results-dialog[open] { display: flex; }
-    .results-dialog::backdrop { background: #071118dd; backdrop-filter: blur(9px); }
+    .results-dialog::backdrop { background: #100d28e8; backdrop-filter: blur(9px); }
     .results-card {
       position: relative; z-index: 1; width: min(100%, 370px); padding: 30px 24px 24px;
-      border: 1px solid #53616a; border-radius: 28px; background: linear-gradient(145deg, #263d48, #14232c 78%);
+      border: 1px solid #65558c; border-radius: 28px; background: linear-gradient(145deg, #493064, #211e43 78%);
       box-shadow: 0 24px 90px #0009; text-align: center; animation: results-enter .45s cubic-bezier(.2,.8,.2,1) both;
     }
-    .results-dialog.is-perfect .results-card { border-color: var(--gold); box-shadow: 0 0 0 1px #f2bd5833, 0 0 55px #f2bd5826, 0 24px 90px #0009; }
+    .results-dialog.is-perfect .results-card { border-color: #ffe17a; box-shadow: 0 0 0 1px #ff79c633, 0 0 55px #ff79c640, 0 24px 90px #0009; }
     .results-icon {
       display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 14px;
-      border: 1px solid #765b31; border-radius: 20px; color: var(--gold); background: #30281d; font-size: 32px;
+      border: 1px solid #d365b2; border-radius: 20px; color: #ffe17a; background: linear-gradient(145deg, #4b2860, #29234b); font-size: 32px;
     }
     .results-kicker { margin: 0 0 6px; color: var(--gold); font-size: 11px; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
     .results-title { margin: 0; font-size: clamp(27px, 8vw, 36px); font-weight: 900; letter-spacing: -.05em; }
     .results-score { margin: 12px 0 16px; color: var(--gold); font-size: clamp(48px, 15vw, 68px); font-weight: 900; letter-spacing: -.07em; line-height: 1; }
     .results-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 15px; }
-    .results-stat { padding: 12px 8px; border: 1px solid #40525c; border-radius: 15px; background: #101e27a6; }
+    .results-stat { padding: 12px 8px; border: 1px solid #554b78; border-radius: 15px; background: #17142fcc; }
     .results-stat-value { display: block; font-size: 20px; font-weight: 850; font-variant-numeric: tabular-nums; }
     .results-stat-label { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-    .results-message { min-height: 40px; margin: 0 0 18px; color: #d0dcdf; font-size: 13px; line-height: 1.55; }
+    .results-message { min-height: 40px; margin: 0 0 18px; color: #e0d9f5; font-size: 13px; line-height: 1.55; }
     .results-actions { display: grid; gap: 10px; }
     .results-close {
-      min-height: 42px; border: 1px solid #425660; border-radius: 13px; color: var(--muted);
+      min-height: 42px; border: 1px solid #5b527d; border-radius: 13px; color: var(--muted);
       background: transparent; cursor: pointer; font: inherit; font-size: 13px; font-weight: 750;
     }
     .fireworks { position: absolute; z-index: 2; inset: 0; overflow: hidden; pointer-events: none; }
@@ -452,6 +454,7 @@
       const checkButton = document.querySelector(".check");
       const cancelButton = document.querySelector(".cancel-round");
       const resultsDialog = document.querySelector(".results-dialog");
+      const resultsKicker = document.querySelector(".results-kicker");
       const resultsTitle = document.querySelector(".results-title");
       const resultsScore = document.querySelector(".results-score");
       const resultsCorrect = document.querySelector(".results-correct");
@@ -462,6 +465,7 @@
       const replayButton = document.querySelector(".results-replay");
       const closeResultsButton = document.querySelector(".results-close");
       const roundLength = 10;
+      const roundTimeLimit = 5 * 60_000;
       let currentNote;
       let correctCount = 0;
       let retryCount = 0;
@@ -508,7 +512,12 @@
       }
 
       function updateTimer() {
-        timerDisplay.textContent = formatTime(performance.now() - roundStartedAt);
+        const elapsedMilliseconds = performance.now() - roundStartedAt;
+        if (elapsedMilliseconds >= roundTimeLimit) {
+          finishRound(true);
+          return;
+        }
+        timerDisplay.textContent = formatTime(elapsedMilliseconds);
       }
 
       function startRound() {
@@ -558,14 +567,14 @@
         nextNote();
       }
 
-      function finishRound() {
+      function finishRound(timedOut = false) {
         roundActive = false;
         window.clearTimeout(nextTimer);
         window.clearInterval(timerInterval);
-        const elapsedMilliseconds = performance.now() - roundStartedAt;
+        const elapsedMilliseconds = timedOut ? roundTimeLimit : performance.now() - roundStartedAt;
         const elapsedTime = formatTime(elapsedMilliseconds);
         timerDisplay.textContent = elapsedTime;
-        roundDisplay.textContent = "Round complete!";
+        roundDisplay.textContent = timedOut ? "Time's up!" : "Round complete!";
         startButton.textContent = "Play again";
         roundGate.hidden = false;
         checkButton.hidden = true;
@@ -576,9 +585,11 @@
           button.disabled = false;
           button.hidden = false;
         });
-        feedback.textContent = `Round complete! You got ${correctCount} / ${roundLength} correct in ${elapsedTime}.`;
-        feedback.className = "feedback correct";
-        showResults(elapsedMilliseconds, elapsedTime);
+        feedback.textContent = timedOut
+          ? `Time's up! You got ${correctCount} / ${roundLength} correct.`
+          : `Round complete! You got ${correctCount} / ${roundLength} correct in ${elapsedTime}.`;
+        feedback.className = timedOut ? "feedback" : "feedback correct";
+        showResults(elapsedMilliseconds, elapsedTime, timedOut);
       }
 
       function cancelRound() {
@@ -616,17 +627,22 @@
         feedback.className = "feedback";
       }
 
-      function showResults(elapsedMilliseconds, elapsedTime) {
+      function showResults(elapsedMilliseconds, elapsedTime, timedOut = false) {
         const perfectRound = correctCount === roundLength && retryCount === 0;
         const fireworksRound = perfectRound && elapsedMilliseconds < 60_000;
         resultsDialog.classList.toggle("is-perfect", fireworksRound);
-        resultsTitle.textContent = fireworksRound ? "Perfect round!" : perfectRound ? "Flawless playing!" : "Nice playing!";
+        resultsKicker.textContent = timedOut ? "Round over" : "Round complete";
+        resultsTitle.textContent = timedOut
+          ? "Time's up!"
+          : fireworksRound ? "Perfect round!" : perfectRound ? "Flawless playing!" : "Nice playing!";
         resultsScore.textContent = `${correctCount} / ${roundLength}`;
         resultsCorrect.textContent = `${correctCount} / ${roundLength}`;
         resultsTime.textContent = elapsedTime;
         resultsRetries.textContent = String(retryCount);
-        resultsMessage.textContent = fireworksRound
-          ? "Every note correct in under a minute. You’re on fire!"
+        resultsMessage.textContent = timedOut
+          ? `The 5-minute time limit is up. You got ${correctCount} / ${roundLength} correct.`
+          : fireworksRound
+            ? "Every note correct in under a minute. You’re on fire!"
           : perfectRound
             ? "Every note correct! Can you beat your time?"
             : "Great practice! Keep going and see if you can beat your score.";
@@ -725,6 +741,10 @@
 
       checkButton.addEventListener("click", () => {
         if (checkButton.disabled || !roundActive) return;
+        if (performance.now() - roundStartedAt >= roundTimeLimit) {
+          finishRound(true);
+          return;
+        }
         const selected = selectedValves();
         const correct = selected.length === currentNote.valves.length &&
           selected.every((valve, index) => valve === currentNote.valves[index]);
