@@ -136,6 +136,58 @@
     .check { color: #21190d; background: var(--gold); box-shadow: 0 5px 0 var(--gold-dark); }
     .check:active { transform: translateY(2px); box-shadow: 0 3px 0 var(--gold-dark); }
 
+    .results-dialog {
+      position: fixed; inset: 0; display: none; width: 100%; max-width: none; height: 100%;
+      max-height: none; align-items: center; justify-content: center; overflow: auto;
+      padding: 20px; border: 0; color: var(--ink); background: transparent;
+    }
+    .results-dialog[open] { display: flex; }
+    .results-dialog::backdrop { background: #071118dd; backdrop-filter: blur(9px); }
+    .results-card {
+      position: relative; z-index: 1; width: min(100%, 370px); padding: 30px 24px 24px;
+      border: 1px solid #53616a; border-radius: 28px; background: linear-gradient(145deg, #263d48, #14232c 78%);
+      box-shadow: 0 24px 90px #0009; text-align: center; animation: results-enter .45s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .results-dialog.is-perfect .results-card { border-color: var(--gold); box-shadow: 0 0 0 1px #f2bd5833, 0 0 55px #f2bd5826, 0 24px 90px #0009; }
+    .results-icon {
+      display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 14px;
+      border: 1px solid #765b31; border-radius: 20px; color: var(--gold); background: #30281d; font-size: 32px;
+    }
+    .results-kicker { margin: 0 0 6px; color: var(--gold); font-size: 11px; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
+    .results-title { margin: 0; font-size: clamp(27px, 8vw, 36px); font-weight: 900; letter-spacing: -.05em; }
+    .results-score { margin: 12px 0 16px; color: var(--gold); font-size: clamp(48px, 15vw, 68px); font-weight: 900; letter-spacing: -.07em; line-height: 1; }
+    .results-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 15px; }
+    .results-stat { padding: 12px 8px; border: 1px solid #40525c; border-radius: 15px; background: #101e27a6; }
+    .results-stat-value { display: block; font-size: 20px; font-weight: 850; font-variant-numeric: tabular-nums; }
+    .results-stat-label { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .results-message { min-height: 40px; margin: 0 0 18px; color: #d0dcdf; font-size: 13px; line-height: 1.55; }
+    .results-actions { display: grid; gap: 10px; }
+    .results-close {
+      min-height: 42px; border: 1px solid #425660; border-radius: 13px; color: var(--muted);
+      background: transparent; cursor: pointer; font: inherit; font-size: 13px; font-weight: 750;
+    }
+    .fireworks { position: absolute; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
+    .firework-burst { position: absolute; width: 1px; height: 1px; }
+    .firework-particle {
+      position: absolute; top: 0; left: 0; width: 4px; height: 12px; border-radius: 99px;
+      background: hsl(var(--hue) 95% 68%); box-shadow: 0 0 10px hsl(var(--hue) 100% 70% / .8);
+      animation: firework 1.5s cubic-bezier(.1,.7,.25,1) var(--delay) both;
+    }
+    @keyframes results-enter {
+      from { opacity: 0; transform: translateY(18px) scale(.94); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes firework {
+      0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0) scale(.3); }
+      12% { opacity: 1; }
+      75% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(var(--distance)) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(var(--distance) * 1.2)) scale(.35); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .results-card { animation: none; }
+      .firework-particle { animation: none; opacity: 0; }
+    }
+
     @media (max-width: 360px) {
       body { padding-right: 12px; padding-left: 12px; }
       .card { padding-right: 15px; padding-left: 15px; }
@@ -149,7 +201,7 @@
     <header>
       <div class="brand-mark" aria-hidden="true">♬</div>
       <div>
-        <div class="brand">Brass Basics</div>
+        <div class="brand">Livia Knows Notes</div>
         <div class="brand-sub">Trumpet fingering practice</div>
       </div>
     </header>
@@ -207,6 +259,35 @@
 
   </main>
 
+  <dialog class="results-dialog" aria-labelledby="results-title">
+    <div class="fireworks" aria-hidden="true" hidden></div>
+    <section class="results-card">
+      <div class="results-icon" aria-hidden="true">♪</div>
+      <p class="results-kicker">Round complete</p>
+      <h2 class="results-title" id="results-title">Nice playing!</h2>
+      <div class="results-score" aria-label="Final score">0 / 10</div>
+      <div class="results-stats">
+        <div class="results-stat">
+          <span class="results-stat-value results-correct">0 / 10</span>
+          <span class="results-stat-label">Correct</span>
+        </div>
+        <div class="results-stat">
+          <span class="results-stat-value results-time">00:00</span>
+          <span class="results-stat-label">Time</span>
+        </div>
+        <div class="results-stat">
+          <span class="results-stat-value results-retries">0</span>
+          <span class="results-stat-label">Retries</span>
+        </div>
+      </div>
+      <p class="results-message"></p>
+      <div class="results-actions">
+        <button class="action start results-replay" type="button">Play again</button>
+        <button class="results-close" type="button">Close</button>
+      </div>
+    </section>
+  </dialog>
+
   <script>
     (() => {
       // Written pitches in the standard beginner range, including sharps and flats.
@@ -258,14 +339,26 @@
       const progressFill = document.querySelector(".round-progress-fill");
       const startButton = document.querySelector(".start");
       const checkButton = document.querySelector(".check");
+      const resultsDialog = document.querySelector(".results-dialog");
+      const resultsTitle = document.querySelector(".results-title");
+      const resultsScore = document.querySelector(".results-score");
+      const resultsCorrect = document.querySelector(".results-correct");
+      const resultsTime = document.querySelector(".results-time");
+      const resultsRetries = document.querySelector(".results-retries");
+      const resultsMessage = document.querySelector(".results-message");
+      const fireworks = document.querySelector(".fireworks");
+      const replayButton = document.querySelector(".results-replay");
+      const closeResultsButton = document.querySelector(".results-close");
       const roundLength = 10;
       let currentNote;
       let correctCount = 0;
+      let retryCount = 0;
       let questionsAnswered = 0;
       let previousIndex = -1;
       let currentLevel = 1;
       let nextTimer;
       let timerInterval;
+      let fireworksTimer;
       let roundStartedAt = 0;
       let roundActive = false;
 
@@ -301,7 +394,13 @@
       function startRound() {
         window.clearTimeout(nextTimer);
         window.clearInterval(timerInterval);
+        window.clearTimeout(fireworksTimer);
+        if (resultsDialog.open) resultsDialog.close();
+        fireworks.hidden = true;
+        fireworks.replaceChildren();
+        resultsDialog.classList.remove("is-perfect");
         correctCount = 0;
+        retryCount = 0;
         questionsAnswered = 0;
         previousIndex = -1;
         roundActive = true;
@@ -324,7 +423,9 @@
         roundActive = false;
         window.clearTimeout(nextTimer);
         window.clearInterval(timerInterval);
-        updateTimer();
+        const elapsedMilliseconds = performance.now() - roundStartedAt;
+        const elapsedTime = formatTime(elapsedMilliseconds);
+        timerDisplay.textContent = elapsedTime;
         roundDisplay.textContent = "Round complete!";
         startButton.textContent = "Play again";
         startButton.hidden = false;
@@ -332,8 +433,60 @@
         checkButton.disabled = true;
         valveButtons.forEach(button => { button.disabled = true; });
         levelButtons.forEach(button => { button.disabled = false; });
-        feedback.textContent = `Round complete! You got ${correctCount} / ${roundLength} correct in ${timerDisplay.textContent}.`;
+        feedback.textContent = `Round complete! You got ${correctCount} / ${roundLength} correct in ${elapsedTime}.`;
         feedback.className = "feedback correct";
+        showResults(elapsedMilliseconds, elapsedTime);
+      }
+
+      function showResults(elapsedMilliseconds, elapsedTime) {
+        const perfectRound = correctCount === roundLength && retryCount === 0;
+        const fireworksRound = perfectRound && elapsedMilliseconds < 60_000;
+        resultsDialog.classList.toggle("is-perfect", fireworksRound);
+        resultsTitle.textContent = fireworksRound ? "Perfect round!" : perfectRound ? "Flawless playing!" : "Nice playing!";
+        resultsScore.textContent = `${correctCount} / ${roundLength}`;
+        resultsCorrect.textContent = `${correctCount} / ${roundLength}`;
+        resultsTime.textContent = elapsedTime;
+        resultsRetries.textContent = String(retryCount);
+        resultsMessage.textContent = fireworksRound
+          ? "Every note correct in under a minute. You’re on fire!"
+          : perfectRound
+            ? "Every note correct! Can you beat your time?"
+            : "Great practice! Keep going and see if you can beat your score.";
+        if (fireworksRound && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          launchFireworks();
+        }
+        resultsDialog.showModal();
+      }
+
+      function launchFireworks() {
+        fireworks.replaceChildren();
+        fireworks.hidden = false;
+        const colors = [42, 170, 195, 280, 335];
+        const bursts = [
+          { x: 18, y: 22, delay: 0 },
+          { x: 80, y: 18, delay: 350 },
+          { x: 52, y: 37, delay: 700 }
+        ];
+        bursts.forEach(burst => {
+          const container = document.createElement("span");
+          container.className = "firework-burst";
+          container.style.left = `${burst.x}%`;
+          container.style.top = `${burst.y}%`;
+          for (let index = 0; index < 18; index += 1) {
+            const particle = document.createElement("span");
+            particle.className = "firework-particle";
+            particle.style.setProperty("--angle", `${index * 20}deg`);
+            particle.style.setProperty("--distance", `${42 + Math.random() * 42}px`);
+            particle.style.setProperty("--delay", `${burst.delay}ms`);
+            particle.style.setProperty("--hue", String(colors[index % colors.length]));
+            container.append(particle);
+          }
+          fireworks.append(container);
+        });
+        fireworksTimer = window.setTimeout(() => {
+          fireworks.hidden = true;
+          fireworks.replaceChildren();
+        }, 2800);
       }
 
       function nextNote() {
@@ -413,6 +566,7 @@
             nextTimer = window.setTimeout(nextNote, 850);
           }
         } else {
+          retryCount += 1;
           const answer = currentNote.valves.length ? currentNote.valves.join(" + ") : "open (no valves)";
           feedback.textContent = `Not quite. Try again — the answer is ${answer}.`;
           feedback.className = "feedback incorrect";
@@ -424,6 +578,8 @@
       });
 
       startButton.addEventListener("click", startRound);
+      replayButton.addEventListener("click", startRound);
+      closeResultsButton.addEventListener("click", () => resultsDialog.close());
       nextNote();
     })();
   </script>
