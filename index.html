@@ -71,6 +71,11 @@
       border: 2px solid var(--gold); border-radius: 50%; background: var(--panel);
       transform: translate(-50%, -50%) rotate(-18deg);
     }
+    .staff-accidental {
+      position: absolute; left: calc(50% - 18px); z-index: 2; color: var(--gold);
+      font: 30px Georgia, serif; line-height: 1; transform: translateY(-50%);
+      pointer-events: none;
+    }
     .ledger-line {
       position: absolute; left: 50%; width: 27px; height: 1px; background: #85949a;
       transform: translate(-50%, -50%);
@@ -146,6 +151,7 @@
           <span class="staff-lines"></span>
           <span class="staff-clef">𝄞</span>
           <span class="ledger-line" hidden></span>
+          <span class="staff-accidental"></span>
           <span class="staff-note"></span>
         </div>
       </div>
@@ -170,29 +176,65 @@
       </div>
     </section>
 
-    <p class="helper"><strong>How to play:</strong> Tap each valve you would press, then check your answer. The note names are in written pitch.</p>
+    <p class="helper"><strong>How to play:</strong> Tap each valve you would press, then check your answer. The note names are in written pitch and include sharps and flats.</p>
   </main>
 
   <script>
     (() => {
-      // Written pitches in the standard beginner range; valve numbers are sorted for comparison.
+      // Written pitches in the standard beginner range, including sharps and flats.
       const notes = [
         { name: "C", octave: 4, valves: [] },
+        { name: "C♯", octave: 4, valves: [1, 2, 3] },
+        { name: "D♭", octave: 4, valves: [1, 2, 3] },
         { name: "D", octave: 4, valves: [1, 3] },
+        { name: "D♯", octave: 4, valves: [2, 3] },
+        { name: "E♭", octave: 4, valves: [2, 3] },
         { name: "E", octave: 4, valves: [1, 2] },
         { name: "F", octave: 4, valves: [1] },
+        { name: "F♯", octave: 4, valves: [2] },
+        { name: "G♭", octave: 4, valves: [2] },
         { name: "G", octave: 4, valves: [] },
+        { name: "G♯", octave: 4, valves: [2, 3] },
+        { name: "A♭", octave: 4, valves: [2, 3] },
         { name: "A", octave: 4, valves: [1, 2] },
+        { name: "A♯", octave: 4, valves: [1] },
+        { name: "B♭", octave: 4, valves: [1] },
         { name: "B", octave: 4, valves: [2] },
         { name: "C", octave: 5, valves: [] },
+        { name: "C♯", octave: 5, valves: [1, 2] },
+        { name: "D♭", octave: 5, valves: [1,2] },
         { name: "D", octave: 5, valves: [1] },
+        { name: "D♯", octave: 5, valves: [2] },
+        { name: "E♭", octave: 5, valves: [2] },
         { name: "E", octave: 5, valves: [] },
         { name: "F", octave: 5, valves: [1] },
+        { name: "F♯", octave: 5, valves: [2] },
+        { name: "G♭", octave: 5, valves: [2] },
         { name: "G", octave: 5, valves: [] }
       ];
+      const pitchOffsets = {
+        C: 0,
+        "C♯": 1,
+        "D♭": 1,
+        D: 2,
+        "D♯": 3,
+        "E♭": 3,
+        E: 4,
+        F: 5,
+        "F♯": 6,
+        "G♭": 6,
+        G: 7,
+        "G♯": 8,
+        "A♭": 8,
+        A: 9,
+        "A♯": 10,
+        "B♭": 10,
+        B: 11
+      };
       const valveButtons = [...document.querySelectorAll(".valve")];
       const noteHeading = document.querySelector(".note");
       const staffNote = document.querySelector(".staff-note");
+      const staffAccidental = document.querySelector(".staff-accidental");
       const ledgerLine = document.querySelector(".ledger-line");
       const feedback = document.querySelector(".feedback");
       const scoreDisplay = document.querySelector(".score");
@@ -203,6 +245,12 @@
       let previousIndex = -1;
       let nextTimer;
 
+      function noteLabel(noteName) {
+        return noteName
+          .replace("♯", " sharp")
+          .replace("♭", " flat");
+      }
+
       function nextNote() {
         window.clearTimeout(nextTimer);
         let index;
@@ -212,11 +260,12 @@
         previousIndex = index;
         currentNote = notes[index];
         noteHeading.innerHTML = `${currentNote.name}<sup>${currentNote.octave}</sup>`;
-        noteHeading.setAttribute("aria-label", `Note to finger: ${currentNote.name} ${currentNote.octave}`);
-        const diatonicSteps = ({ C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 }[currentNote.name]) +
-          (currentNote.octave - 4) * 7 - 2;
-        const noteTop = 60 - diatonicSteps * 5;
+        noteHeading.setAttribute("aria-label", `Note to finger: ${noteLabel(currentNote.name)} ${currentNote.octave}`);
+        const pitchIndex = pitchOffsets[currentNote.name] + (currentNote.octave - 4) * 12;
+        const noteTop = 64 - pitchIndex * 2.4;
+        staffAccidental.textContent = currentNote.name.includes("♯") ? "♯" : currentNote.name.includes("♭") ? "♭" : "";
         staffNote.style.top = `${noteTop}px`;
+        staffAccidental.style.top = `${noteTop}px`;
         ledgerLine.style.top = `${noteTop}px`;
         ledgerLine.hidden = !(currentNote.name === "C" && currentNote.octave === 4);
         valveButtons.forEach(button => button.setAttribute("aria-pressed", "false"));
