@@ -156,6 +156,29 @@
       backdrop-filter: blur(5px);
     }
     .round-gate[hidden] { display: none; }
+    .round-intro {
+      position: fixed; inset: 0; z-index: 20; display: grid; place-items: center;
+      padding: 20px; background: #071118b8; backdrop-filter: blur(5px);
+      pointer-events: none; animation: round-intro 4s ease both;
+    }
+    .round-intro[hidden] { display: none; }
+    .round-intro-card {
+      width: min(100%, 330px); padding: 28px 24px; border: 1px solid #765b31;
+      border-radius: 24px; color: var(--ink); background: linear-gradient(145deg, #263d48, #14232c);
+      box-shadow: 0 20px 70px #0008; text-align: center;
+      animation: intro-card-enter .35s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .round-intro-trumpet { display: block; margin-bottom: 10px; font-size: 58px; line-height: 1; }
+    .round-intro-title { margin: 0; color: var(--gold); font-size: 24px; font-weight: 900; letter-spacing: -.04em; }
+    .round-intro-message { margin: 7px 0 0; color: #d0dcdf; font-size: 14px; }
+    @keyframes round-intro {
+      0%, 78% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes intro-card-enter {
+      from { opacity: 0; transform: translateY(10px) scale(.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
     button.action.round-start {
       width: min(100%, 330px); min-height: 68px; border: 1px solid #ffdc8c;
       color: #21190d; background: linear-gradient(135deg, #ffcf70, var(--gold) 65%);
@@ -302,6 +325,14 @@
 
   </main>
 
+  <div class="round-intro" role="status" aria-live="polite" hidden>
+    <div class="round-intro-card">
+      <span class="round-intro-trumpet" aria-hidden="true">🎺</span>
+      <p class="round-intro-title">Round started!</p>
+      <p class="round-intro-message">Get ready to play 10 notes.</p>
+    </div>
+  </div>
+
   <dialog class="results-dialog" aria-labelledby="results-title">
     <div class="fireworks" aria-hidden="true" hidden></div>
     <section class="results-card">
@@ -381,6 +412,7 @@
       const progressBar = document.querySelector(".round-progress");
       const progressFill = document.querySelector(".round-progress-fill");
       const roundGate = document.querySelector(".round-gate");
+      const roundIntro = document.querySelector(".round-intro");
       const startButton = document.querySelector(".round-start");
       const checkButton = document.querySelector(".check");
       const resultsDialog = document.querySelector(".results-dialog");
@@ -402,6 +434,7 @@
       let currentLevel = 1;
       let nextTimer;
       let timerInterval;
+      let roundIntroTimer;
       let fireworksTimer;
       let roundStartedAt = 0;
       let roundActive = false;
@@ -446,6 +479,7 @@
       function startRound() {
         window.clearTimeout(nextTimer);
         window.clearInterval(timerInterval);
+        window.clearTimeout(roundIntroTimer);
         window.clearTimeout(fireworksTimer);
         if (resultsDialog.open) resultsDialog.close();
         fireworks.hidden = true;
@@ -463,6 +497,10 @@
         progressBar.setAttribute("aria-valuenow", "0");
         progressFill.style.width = "0%";
         roundGate.hidden = true;
+        roundIntro.hidden = false;
+        roundIntroTimer = window.setTimeout(() => {
+          roundIntro.hidden = true;
+        }, 4000);
         checkButton.hidden = false;
         checkButton.textContent = "Check answer";
         levelButtons.forEach(button => { button.disabled = true; });
