@@ -237,7 +237,7 @@
     .firework-particle {
       position: absolute; top: 0; left: 0; width: 4px; height: 12px; border-radius: 99px;
       background: hsl(var(--hue) 95% 68%); box-shadow: 0 0 10px hsl(var(--hue) 100% 70% / .8);
-      animation: firework 1.5s cubic-bezier(.1,.7,.25,1) var(--delay) both;
+      animation: firework 3s cubic-bezier(.1,.7,.25,1) var(--delay) both;
     }
     @keyframes results-enter {
       from { opacity: 0; transform: translateY(18px) scale(.94); }
@@ -642,8 +642,8 @@
         const colors = [42, 170, 195, 280, 335];
         const bursts = [
           { x: 18, y: 22, delay: 0 },
-          { x: 80, y: 18, delay: 350 },
-          { x: 52, y: 37, delay: 700 }
+          { x: 80, y: 18, delay: 700 },
+          { x: 52, y: 37, delay: 1400 }
         ];
         bursts.forEach(burst => {
           const container = document.createElement("span");
@@ -664,7 +664,7 @@
         fireworksTimer = window.setTimeout(() => {
           fireworks.hidden = true;
           fireworks.replaceChildren();
-        }, 2800);
+        }, 5600);
       }
 
       function nextNote() {
