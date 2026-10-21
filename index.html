@@ -104,6 +104,7 @@
     .level-button:active { transform: scale(.98); }
 
     .question-title { margin: 19px 0 13px; text-align: center; font-size: 15px; font-weight: 750; }
+    .play-controls { position: relative; }
     .valves { display: flex; justify-content: center; gap: 12px; }
     .valve {
       display: flex; min-width: 82px; min-height: 94px; flex-direction: column; align-items: center;
@@ -127,6 +128,21 @@
     .feedback.correct { color: var(--mint); }
     .feedback.incorrect { color: var(--red); }
     .actions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+    .round-gate {
+      position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; padding: 20px;
+      border: 1px solid #40525c; border-radius: 20px;
+      background: linear-gradient(145deg, #101b24eF, #14232cf5);
+      backdrop-filter: blur(5px);
+    }
+    .round-gate[hidden] { display: none; }
+    button.action.round-start {
+      width: min(100%, 330px); min-height: 68px; border: 1px solid #ffdc8c;
+      color: #21190d; background: linear-gradient(135deg, #ffcf70, var(--gold) 65%);
+      box-shadow: 0 7px 0 var(--gold-dark), 0 12px 32px #0006;
+      font-size: 16px; transition: transform .12s, box-shadow .12s;
+    }
+    button.action.round-start:hover { transform: translateY(-2px); box-shadow: 0 9px 0 var(--gold-dark), 0 16px 36px #0007; }
+    button.action.round-start:active { transform: translateY(3px); box-shadow: 0 4px 0 var(--gold-dark); }
     button.action {
       min-height: 52px; border: 0; border-radius: 15px; cursor: pointer; font: inherit;
       font-size: 14px; font-weight: 800; touch-action: manipulation;
@@ -237,23 +253,27 @@
         <button class="level-button" type="button" data-level="3" aria-pressed="false">Level 3</button>
       </div>
 
-      <h2 class="question-title">Choose your valves</h2>
-      <div class="valves" aria-label="Trumpet valves">
-        <button class="valve" type="button" aria-pressed="false" aria-label="Valve 1, first valve">
-          <span class="valve-number">1</span>
-        </button>
-        <button class="valve" type="button" aria-pressed="false" aria-label="Valve 2, second valve">
-          <span class="valve-number">2</span>
-        </button>
-        <button class="valve" type="button" aria-pressed="false" aria-label="Valve 3, third valve">
-          <span class="valve-number">3</span>
-        </button>
-      </div>
+      <div class="play-controls">
+        <h2 class="question-title">Choose your valves</h2>
+        <div class="valves" aria-label="Trumpet valves">
+          <button class="valve" type="button" aria-pressed="false" aria-label="Valve 1, first valve">
+            <span class="valve-number">1</span>
+          </button>
+          <button class="valve" type="button" aria-pressed="false" aria-label="Valve 2, second valve">
+            <span class="valve-number">2</span>
+          </button>
+          <button class="valve" type="button" aria-pressed="false" aria-label="Valve 3, third valve">
+            <span class="valve-number">3</span>
+          </button>
+        </div>
 
-      <div class="feedback" role="status" aria-live="polite">Tap the valves, then check your answer.</div>
-      <div class="actions">
-        <button class="action start" type="button">Start 10-note round</button>
-        <button class="action check" type="button" disabled hidden>Check answer</button>
+        <div class="feedback" role="status" aria-live="polite">Tap the valves, then check your answer.</div>
+        <div class="actions">
+          <button class="action check" type="button" disabled hidden>Check answer</button>
+        </div>
+        <div class="round-gate">
+          <button class="action round-start" type="button">Start 10-note round</button>
+        </div>
       </div>
     </section>
 
@@ -337,7 +357,8 @@
       const timerDisplay = document.querySelector(".timer");
       const progressBar = document.querySelector(".round-progress");
       const progressFill = document.querySelector(".round-progress-fill");
-      const startButton = document.querySelector(".start");
+      const roundGate = document.querySelector(".round-gate");
+      const startButton = document.querySelector(".round-start");
       const checkButton = document.querySelector(".check");
       const resultsDialog = document.querySelector(".results-dialog");
       const resultsTitle = document.querySelector(".results-title");
@@ -410,7 +431,7 @@
         timerDisplay.textContent = "00:00";
         progressBar.setAttribute("aria-valuenow", "0");
         progressFill.style.width = "0%";
-        startButton.hidden = true;
+        roundGate.hidden = true;
         checkButton.hidden = false;
         checkButton.textContent = "Check answer";
         levelButtons.forEach(button => { button.disabled = true; });
@@ -428,7 +449,7 @@
         timerDisplay.textContent = elapsedTime;
         roundDisplay.textContent = "Round complete!";
         startButton.textContent = "Play again";
-        startButton.hidden = false;
+        roundGate.hidden = false;
         checkButton.hidden = true;
         checkButton.disabled = true;
         valveButtons.forEach(button => { button.disabled = true; });
