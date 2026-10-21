@@ -396,6 +396,10 @@
         { name: "G", octave: 5, valves: [] }
       ];
       const staffOffsets = { C: 0, D: 1, E: 2, F: 3, G: 4, A: 5, B: 6 };
+      const pitchClasses = {
+        C: 0, "C♯": 1, "D♭": 1, D: 2, "D♯": 3, "E♭": 3, E: 4, F: 5,
+        "F♯": 6, "G♭": 6, G: 7, "G♯": 8, "A♭": 8, A: 9, "A♯": 10, "B♭": 10, B: 11
+      };
       const naturalNotes = notes.filter(note => !note.name.includes("♯") && !note.name.includes("♭"));
       const flatNotes = notes.filter(note => !note.name.includes("♯"));
       const levelSets = { 1: naturalNotes, 2: flatNotes, 3: notes };
@@ -430,7 +434,7 @@
       let correctCount = 0;
       let retryCount = 0;
       let questionsAnswered = 0;
-      let previousIndex = -1;
+      let roundNotes = [];
       let currentLevel = 1;
       let nextTimer;
       let timerInterval;
@@ -455,7 +459,6 @@
         correctCount = 0;
         retryCount = 0;
         questionsAnswered = 0;
-        previousIndex = -1;
         startButton.textContent = "Start 10-note round";
         scoreDisplay.textContent = `0 / ${roundLength} correct`;
         timerDisplay.textContent = "00:00";
@@ -488,7 +491,17 @@
         correctCount = 0;
         retryCount = 0;
         questionsAnswered = 0;
-        previousIndex = -1;
+        const seenPitches = new Set();
+        roundNotes = levelSets[currentLevel].filter(note => {
+          const pitch = note.octave * 12 + pitchClasses[note.name];
+          if (seenPitches.has(pitch)) return false;
+          seenPitches.add(pitch);
+          return true;
+        });
+        for (let index = roundNotes.length - 1; index > 0; index -= 1) {
+          const swapIndex = Math.floor(Math.random() * (index + 1));
+          [roundNotes[index], roundNotes[swapIndex]] = [roundNotes[swapIndex], roundNotes[index]];
+        }
         roundActive = true;
         roundStartedAt = performance.now();
         scoreDisplay.textContent = `0 / ${roundLength} correct`;
@@ -585,13 +598,12 @@
           finishRound();
           return;
         }
-        const availableNotes = levelSets[currentLevel];
-        let index;
-        do {
-          index = Math.floor(Math.random() * availableNotes.length);
-        } while (availableNotes.length > 1 && index === previousIndex);
-        previousIndex = index;
-        currentNote = availableNotes[index];
+        if (roundActive) {
+          currentNote = roundNotes[questionsAnswered];
+        } else {
+          const availableNotes = levelSets[currentLevel];
+          currentNote = availableNotes[Math.floor(Math.random() * availableNotes.length)];
+        }
         noteHeading.textContent = currentNote.name;
         noteHeading.setAttribute("aria-label", `Note to finger: ${noteLabel(currentNote.name)}`);
         const staffPosition = staffOffsets[currentNote.name[0]] + (currentNote.octave - 4) * 7;
